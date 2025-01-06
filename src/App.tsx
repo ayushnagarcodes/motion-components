@@ -1,5 +1,6 @@
 import DragTransform from "./components/DragTransform";
 import ExitAnimation from "./components/ExitAnimation";
+import QuotesSlider from "./components/QuotesSlider";
 // import Practice from "./components/Practice";
 import TextStretch from "./components/TextStretch";
 
@@ -10,6 +11,7 @@ function App() {
       <TextStretch />
       <DragTransform />
       <ExitAnimation />
+      <QuotesSlider />
     </main>
   );
 }
