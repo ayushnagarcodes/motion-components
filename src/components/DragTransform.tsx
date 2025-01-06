@@ -11,7 +11,7 @@ function DragTransform() {
   const borderRadius = useTransform(x, [-200, 0, 200], [100, 0, 100]);
 
   return (
-    <section className="flex min-h-screen w-full flex-col items-center justify-center gap-6 bg-red-200">
+    <section className="flex min-h-screen w-full flex-col items-center justify-center gap-6 bg-red-100">
       <p className="text-xl italic">Drag Me</p>
 
       <motion.div
