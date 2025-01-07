@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import useInterval from "../hooks/useInterval";
-import { quotes } from "../utils/quotes";
+import { quotes } from "../utils/utils";
 import { ChevronLeft, ChevronRight } from "../utils/icons";
 
 const SPEED = 4000; // in 'ms'

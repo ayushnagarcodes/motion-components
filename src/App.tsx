@@ -1,6 +1,7 @@
 import DragTransform from "./components/DragTransform";
 import ExitAnimation from "./components/ExitAnimation";
 import QuotesSlider from "./components/QuotesSlider";
+import ResponsiveNotify from "./components/ResponsiveNotify";
 import StaggeredNav from "./components/StaggeredNav";
 // import Practice from "./components/Practice";
 import TextStretch from "./components/TextStretch";
@@ -14,6 +15,7 @@ function App() {
       <ExitAnimation />
       <QuotesSlider />
       <StaggeredNav />
+      <ResponsiveNotify />
     </main>
   );
 }
