@@ -3,6 +3,7 @@ import ExitAnimation from "./components/ExitAnimation";
 import QuotesSlider from "./components/QuotesSlider";
 import ResponsiveNotify from "./components/ResponsiveNotify";
 import StaggeredNav from "./components/StaggeredNav";
+import StaggeredScroll from "./components/StaggeredScroll";
 // import Practice from "./components/Practice";
 import TextStretch from "./components/TextStretch";
 
@@ -16,6 +17,7 @@ function App() {
       <QuotesSlider />
       <StaggeredNav />
       <ResponsiveNotify />
+      <StaggeredScroll />
     </main>
   );
 }
