@@ -4,13 +4,15 @@ import QuotesSlider from "./components/QuotesSlider";
 import ResponsiveNotify from "./components/ResponsiveNotify";
 import StaggeredNav from "./components/StaggeredNav";
 import StaggeredScroll from "./components/StaggeredScroll";
-// import Practice from "./components/Practice";
+import TextSlideOnScroll from "./components/TextSlideOnScroll";
 import TextStretch from "./components/TextStretch";
+// import Practice from "./components/Practice";
 
 function App() {
   return (
     <main className="grid md:grid-cols-2">
       {/* <Practice /> */}
+      <TextSlideOnScroll />
       <TextStretch />
       <DragTransform />
       <ExitAnimation />
