@@ -1,5 +1,7 @@
 import DragTransform from "./components/DragTransform";
 import ExitAnimation from "./components/ExitAnimation";
+import FormSubmit from "./components/FormSubmit";
+import MusicPlayer from "./components/MusicPlayer";
 import QuotesSlider from "./components/QuotesSlider";
 import ResponsiveNotify from "./components/ResponsiveNotify";
 import StaggeredNav from "./components/StaggeredNav";
@@ -14,6 +16,8 @@ function App() {
       {/* <Practice /> */}
       <TextSlideOnScroll />
       <TextStretch />
+      <MusicPlayer />
+      <FormSubmit />
       <DragTransform />
       <ExitAnimation />
       <QuotesSlider />
