@@ -11,9 +11,7 @@ function SharedLayoutNav() {
           className="relative cursor-pointer"
           onClick={() => setActiveIndex(0)}
         >
-          <a href="#" className="relative z-10">
-            Home
-          </a>
+          <a className="relative z-10">Home</a>
           {activeIndex === 0 && (
             <motion.div
               className="absolute inset-0 rounded-lg bg-fuchsia-400"
@@ -21,10 +19,11 @@ function SharedLayoutNav() {
             />
           )}
         </li>
-        <li className="relative" onClick={() => setActiveIndex(1)}>
-          <a href="#" className="relative z-10">
-            About
-          </a>
+        <li
+          className="relative cursor-pointer"
+          onClick={() => setActiveIndex(1)}
+        >
+          <a className="relative z-10">About</a>
           {activeIndex === 1 && (
             <motion.div
               className="absolute inset-0 rounded-lg bg-fuchsia-400"
@@ -32,10 +31,11 @@ function SharedLayoutNav() {
             />
           )}
         </li>
-        <li className="relative" onClick={() => setActiveIndex(2)}>
-          <a href="#" className="relative z-10">
-            Contact
-          </a>
+        <li
+          className="relative cursor-pointer"
+          onClick={() => setActiveIndex(2)}
+        >
+          <a className="relative z-10">Contact</a>
           {activeIndex === 2 && (
             <motion.div
               className="absolute inset-0 rounded-lg bg-fuchsia-400"
