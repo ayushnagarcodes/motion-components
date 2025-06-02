@@ -1,4 +1,5 @@
 import BottomStickyNav from "./components/BottomStickyNav";
+import CursorHoverMaskReveal from "./components/CursorHoverMaskReveal";
 import DragTransform from "./components/DragTransform";
 import ExitAnimation from "./components/ExitAnimation";
 import FormSubmit from "./components/FormSubmit";
@@ -17,6 +18,7 @@ function App() {
   return (
     <main className="grid md:grid-cols-2">
       {/* <Practice /> */}
+      <CursorHoverMaskReveal />
       <MusicApp />
       <BottomStickyNav />
       <TextSlideOnScroll />
