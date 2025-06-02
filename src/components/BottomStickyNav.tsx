@@ -61,14 +61,16 @@ function BottomStickyNav() {
           )}
           <motion.ol
             layout
-            className="mx-auto flex gap-4 *:rounded-xl *:p-2 *:transition-colors hover:*:bg-gray-300 hover:*:text-stone-800"
+            className="mx-auto flex gap-4 *:rounded-xl *:p-2 *:transition-colors *:hover:bg-gray-300 *:hover:text-stone-800"
           >
             <li>
               <a>Home</a>
             </li>
-            <li className={`${isOpen ? "bg-gray-300 text-stone-800" : ""}`}>
+            <li
+              className={`cursor-pointer ${isOpen ? "bg-gray-300 text-stone-800" : ""}`}
+            >
               <button
-                className="flex items-center gap-1"
+                className="flex cursor-pointer items-center gap-1"
                 onClick={() => setIsOpen(!isOpen)}
               >
                 Portfolio

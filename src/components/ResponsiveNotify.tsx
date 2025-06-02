@@ -57,7 +57,7 @@ function ResponsiveNotify() {
                         "--y": "50px",
                       },
                     }}
-                    className="flex items-center gap-4 px-5 py-3 leading-tight max-sm:translate-y-[--y] md:translate-x-[--x]"
+                    className="flex items-center gap-4 px-5 py-3 leading-tight max-sm:translate-y-(--y) md:translate-x-(--x)"
                     key={notification.id}
                   >
                     <Logo />

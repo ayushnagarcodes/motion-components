@@ -66,7 +66,7 @@ export function DetailView({ song, onClose }: DetailViewProps) {
         exit="hidden"
         layout
         onClick={onClose}
-        className="mt-16 w-[40%] rounded-full bg-black px-4 py-2 text-white"
+        className="mt-16 w-[40%] cursor-pointer rounded-full bg-black px-4 py-2 text-white"
       >
         Back
       </motion.button>
