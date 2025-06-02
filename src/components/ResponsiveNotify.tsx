@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Bell, Logo } from "../utils/icons";
 import { fakeNotifications } from "../utils/utils";
