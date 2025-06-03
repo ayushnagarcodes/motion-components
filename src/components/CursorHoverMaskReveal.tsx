@@ -18,7 +18,7 @@ function CursorHoverMaskReveal() {
         className="absolute grid h-full place-items-center bg-[#ec4e39] mask-[url(/assets/masks/circle.svg)] mask-no-repeat p-8"
       >
         <p
-          className="text-5xl font-semibold text-[#afa18f]"
+          className="text-5xl font-semibold text-[#0f0f0f]"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
