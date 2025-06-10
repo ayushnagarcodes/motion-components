@@ -77,6 +77,8 @@ function CanvasPaintReveal() {
     (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
       if (isRevealed) return;
 
+      const rect = canvas.current?.getBoundingClientRect();
+
       const speed =
         Math.max(Math.abs(event.movementX), Math.abs(event.movementY)) / 10;
 
@@ -84,12 +86,12 @@ function CanvasPaintReveal() {
         for (let i = 0; i < speed; i++) {
           const targetX = lerp(
             prevPosition.current.x,
-            event.pageX,
+            rect ? event.clientX - rect.left : event.clientX,
             (1 / speed) * i
           );
           const targetY = lerp(
             prevPosition.current.y,
-            event.pageY,
+            rect ? event.clientY - rect.top : event.clientY,
             (1 / speed) * i
           );
           drawCircle(targetX, targetY, 50);
@@ -97,8 +99,8 @@ function CanvasPaintReveal() {
       }
 
       prevPosition.current = {
-        x: event.pageX,
-        y: event.pageY,
+        x: rect ? event.clientX - rect.left : event.clientX,
+        y: rect ? event.clientY - rect.top : event.clientY,
       };
     },
     [drawCircle, isRevealed]
@@ -183,7 +185,7 @@ function CanvasPaintReveal() {
   }, [dimension, init]);
 
   return (
-    <section className="relative grid min-h-screen w-full place-items-center overflow-hidden bg-slate-300 p-8">
+    <section className="relative grid min-h-svh w-full place-items-center overflow-hidden bg-slate-300 p-8 md:min-h-screen">
       <p className="text-5xl font-semibold text-slate-800">
         <span className="block">I'm a frontend dev...</span>
         <span className="block">
