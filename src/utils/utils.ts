@@ -1,3 +1,10 @@
+/*
+  x: The value we want to interpolate from (start)
+  y: The target value we want to interpolate to (end)
+  a: The amount by which we want x to be closer to y
+*/
+export const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a;
+
 export const quotes = [
   {
     image: "https://i.pravatar.cc/80?img=1",
