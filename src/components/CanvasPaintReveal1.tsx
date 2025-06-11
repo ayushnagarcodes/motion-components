@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useWindowDimension from "../hooks/useWindowDimension";
 import { lerp } from "../utils/utils";
 
-function CanvasPaintReveal() {
+function CanvasPaintReveal1() {
   const dimension = useWindowDimension();
   const canvas = useRef<HTMLCanvasElement | null>(null);
   const prevPosition = useRef<{ x: number; y: number } | null>(null);
@@ -217,4 +217,4 @@ function CanvasPaintReveal() {
   );
 }
 
-export default CanvasPaintReveal;
+export default CanvasPaintReveal1;

@@ -1,5 +1,6 @@
 import BottomStickyNav from "./components/BottomStickyNav";
-import CanvasPaintReveal from "./components/CanvasPaintReveal";
+import CanvasPaintReveal1 from "./components/CanvasPaintReveal1";
+import CanvasPaintReveal2 from "./components/CanvasPaintReveal2";
 import CursorHoverMaskReveal from "./components/CursorHoverMaskReveal";
 import DragTransform from "./components/DragTransform";
 import ExitAnimation from "./components/ExitAnimation";
@@ -19,7 +20,8 @@ function App() {
   return (
     <main className="grid md:grid-cols-2">
       {/* <Practice /> */}
-      <CanvasPaintReveal />
+      <CanvasPaintReveal1 />
+      <CanvasPaintReveal2 />
       <CursorHoverMaskReveal />
       <MusicApp />
       <BottomStickyNav />
