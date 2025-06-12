@@ -202,7 +202,7 @@ function CanvasPaintReveal1() {
           width={dimension.width < 768 ? dimension.width : dimension.width / 2}
           height={dimension.height}
           style={{
-            touchAction: isRevealed ? "auto" : "none",
+            touchAction: isRevealed || !isDrawing ? "auto" : "none",
             opacity: isRevealed ? 0 : 1,
             transition: isRevealed ? "opacity 0.8s ease-out" : "none",
           }}
