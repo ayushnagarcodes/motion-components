@@ -8,10 +8,10 @@ function CanvasPaintReveal() {
   const brushImage = useRef<HTMLImageElement | null>(null);
   const prevPosition = useRef<{ x: number; y: number } | null>(null);
   const isDrawing = useRef(false);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
   const animationRef = useRef<number | null>(null);
   const totalPixels = useRef(0);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const init = useCallback(() => {
     if (!canvas.current) return;
@@ -29,54 +29,41 @@ function CanvasPaintReveal() {
     setIsAnimating(false);
   }, [dimension]);
 
-  const drawBrush = useCallback(
-    (x: number, y: number, scale: number = 1) => {
-      if (!canvas.current || isRevealed || !brushImage.current) return;
-      const context = canvas.current.getContext("2d");
-      if (!context) return;
+  const drawBrush = (x: number, y: number, scale: number = 1) => {
+    if (!canvas.current || isRevealed || !brushImage.current) return;
+    const context = canvas.current.getContext("2d");
+    if (!context) return;
 
-      context.save();
+    context.save();
+    context.translate(x, y);
+    context.scale(scale, scale);
+    context.drawImage(
+      brushImage.current,
+      -brushImage.current.width / 2,
+      -brushImage.current.height / 2
+    );
+    context.restore();
+  };
 
-      context.translate(x, y);
-      context.scale(scale, scale);
+  const drawBrushLine = (
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    scale: number = 1
+  ) => {
+    if (!canvas.current || isRevealed) return;
 
-      context.drawImage(
-        brushImage.current,
-        -brushImage.current.width / 2,
-        -brushImage.current.height / 2
-      );
+    const distance = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+    const steps = Math.max(1, Math.floor(distance / 3));
 
-      context.restore();
-    },
-    [isRevealed]
-  );
-
-  const drawBrushLine = useCallback(
-    (
-      startX: number,
-      startY: number,
-      endX: number,
-      endY: number,
-      speed: number
-    ) => {
-      if (!canvas.current || isRevealed) return;
-
-      const distance = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
-      const steps = Math.max(1, Math.floor(distance / 3));
-
-      const scale = Math.max(0.8, Math.min(1.5, 1.2 - speed / 200));
-
-      for (let i = 0; i <= steps; i++) {
-        const t = i / steps;
-        const x = lerp(startX, endX, t);
-        const y = lerp(startY, endY, t);
-
-        // Draw brush at interpolated position without rotation
-        drawBrush(x, y, scale);
-      }
-    },
-    [drawBrush, isRevealed]
-  );
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const x = lerp(startX, endX, t);
+      const y = lerp(startY, endY, t);
+      drawBrush(x, y, scale);
+    }
+  };
 
   // Auto-paint animation function
   const startAutoAnimation = useCallback(() => {
@@ -86,26 +73,26 @@ function CanvasPaintReveal() {
     const canvasWidth = canvas.current.width;
     const canvasHeight = canvas.current.height;
 
-    let currentX = 0;
-    let currentY = canvasHeight * 0.2;
-    let progress = 0;
-    const animationSpeed = 0.03;
+    const animationSpeed = 0.05;
 
-    // Define waypoints for the path
     const waypoints = [
-      { x: 0, y: canvasHeight * 0.2 },
+      { x: canvasWidth * 0.05, y: canvasHeight * 0.2 },
       { x: canvasWidth * 0.3, y: 0 },
-      { x: canvasWidth * 0, y: canvasHeight * 0.55 },
-      { x: canvasWidth * 0.6, y: canvasHeight * 0 },
-      { x: 0, y: canvasHeight * 0.8 },
-      { x: canvasWidth * 0.75, y: canvasHeight * 0.1 },
+      { x: canvasWidth * 0.1, y: canvasHeight * 0.45 },
+      { x: canvasWidth * 0.6, y: 0.05 },
+      { x: canvasWidth * 0.1, y: canvasHeight * 0.7 },
+      { x: canvasWidth * 0.75, y: canvasHeight * 0.05 },
       { x: canvasWidth * 0.2, y: canvasHeight * 0.9 },
-      { x: canvasWidth * 0.9, y: canvasHeight * 0.3 },
-      { x: canvasWidth * 0.5, y: canvasHeight * 0.9 },
-      { x: canvasWidth, y: canvasHeight * 0.6 },
+      { x: canvasWidth * 0.9, y: canvasHeight * 0.2 },
+      { x: canvasWidth * 0.4, y: canvasHeight * 0.95 },
+      { x: canvasWidth * 0.9, y: canvasHeight * 0.5 },
+      { x: canvasWidth * 0.7, y: canvasHeight * 0.95 },
+      { x: canvasWidth, y: canvasHeight * 0.75 },
     ];
 
     let currentWaypointIndex = 0;
+    let segmentProgress = 0;
+    let lastPosition: { x: number; y: number } | null = null;
 
     const animateStroke = () => {
       if (isRevealed || currentWaypointIndex >= waypoints.length - 1) {
@@ -113,48 +100,50 @@ function CanvasPaintReveal() {
         return;
       }
 
-      progress += animationSpeed;
+      segmentProgress += animationSpeed;
 
-      if (progress >= 1) {
-        // Move to next waypoint
-        currentWaypointIndex++;
-        progress = 0;
+      const startPoint = waypoints[currentWaypointIndex];
+      const endPoint = waypoints[currentWaypointIndex + 1];
+
+      // Calculate current position along the segment
+      const currentX = lerp(startPoint.x, endPoint.x, segmentProgress);
+      const currentY = lerp(startPoint.y, endPoint.y, segmentProgress);
+
+      if (lastPosition) {
+        drawBrushLine(lastPosition.x, lastPosition.y, currentX, currentY);
+        lastPosition = { x: currentX, y: currentY };
+      } else {
+        // Draw the first point
+        drawBrush(currentX, currentY);
+        lastPosition = { x: currentX, y: currentY };
       }
 
-      if (currentWaypointIndex < waypoints.length - 1) {
-        const startPoint = waypoints[currentWaypointIndex];
-        const endPoint = waypoints[currentWaypointIndex + 1];
-
-        currentX = lerp(startPoint.x, endPoint.x, progress);
-        currentY = lerp(startPoint.y, endPoint.y, progress);
-
-        // Add brush texture randomness
-        const jitterX = (Math.random() - 0.5) * 20;
-        const jitterY = (Math.random() - 0.5) * 20;
-
-        drawBrush(currentX + jitterX, currentY + jitterY, 1.2);
+      // Move to next segment when current one is complete
+      if (segmentProgress >= 1) {
+        currentWaypointIndex++;
+        segmentProgress = 0;
       }
 
       animationRef.current = requestAnimationFrame(animateStroke);
     };
 
     animateStroke();
-  }, [drawBrush, isAnimating, isRevealed]);
+  }, [isRevealed, isAnimating]);
 
-  const stopAutoAnimation = useCallback(() => {
+  const stopAutoAnimation = () => {
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
     setIsAnimating(false);
-  }, []);
+  };
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = () => {
     // Only start animation on desktop (non-touch devices)
     if (dimension.width >= 768 && !isAnimating && !isRevealed) {
       startAutoAnimation();
     }
-  }, [dimension.width, isAnimating, isRevealed, startAutoAnimation]);
+  };
 
   const checkErasedPercentage = useCallback(() => {
     if (!canvas.current || isRevealed) return;
@@ -171,7 +160,6 @@ function CanvasPaintReveal() {
     const data = imageData.data;
 
     let transparentPixels = 0;
-
     for (let i = 3; i < data.length; i += 4) {
       if (data[i] === 0) {
         transparentPixels++;
@@ -184,120 +172,94 @@ function CanvasPaintReveal() {
       setIsRevealed(true);
       stopAutoAnimation();
     }
-  }, [isRevealed, stopAutoAnimation]);
+  }, [isRevealed]);
 
-  const manageMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-      // Disable manual painting on desktop when auto-animation is active
-      if (isRevealed || (dimension.width >= 768 && isAnimating)) return;
+  const handleMouseMove = (
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
+    // Disable manual painting on desktop when auto-animation is active
+    if (isRevealed || (dimension.width >= 768 && isAnimating)) return;
 
-      const rect = canvas.current?.getBoundingClientRect();
-      if (!rect) return;
+    const rect = canvas.current?.getBoundingClientRect();
+    if (!rect) return;
 
-      const currentX = event.clientX - rect.left;
-      const currentY = event.clientY - rect.top;
-      const speed = Math.max(
-        Math.abs(event.movementX),
-        Math.abs(event.movementY)
+    const currentX = event.clientX - rect.left;
+    const currentY = event.clientY - rect.top;
+
+    if (prevPosition.current !== null) {
+      drawBrushLine(
+        prevPosition.current.x,
+        prevPosition.current.y,
+        currentX,
+        currentY
       );
+    } else {
+      drawBrush(currentX, currentY);
+    }
 
-      if (prevPosition.current !== null) {
-        drawBrushLine(
-          prevPosition.current.x,
-          prevPosition.current.y,
-          currentX,
-          currentY,
-          speed
-        );
-      } else {
-        drawBrush(currentX, currentY);
-      }
-
-      prevPosition.current = { x: currentX, y: currentY };
-    },
-    [drawBrushLine, drawBrush, isRevealed, dimension.width, isAnimating]
-  );
+    prevPosition.current = { x: currentX, y: currentY };
+  };
 
   // Handlers for touch events
-  const getTouchEventCoordinates = useCallback(
-    (event: React.TouchEvent<HTMLCanvasElement>) => {
-      const rect = canvas.current?.getBoundingClientRect();
-      if (!rect) return { x: 0, y: 0 };
+  const getTouchEventCoordinates = (
+    event: React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    const rect = canvas.current?.getBoundingClientRect();
+    if (!rect) return { x: 0, y: 0 };
 
-      if (event.touches && event.touches.length > 0) {
-        return {
-          x: event.touches[0].clientX - rect.left,
-          y: event.touches[0].clientY - rect.top,
-        };
-      }
-      return { x: 0, y: 0 };
-    },
-    []
-  );
+    if (event.touches && event.touches.length > 0) {
+      return {
+        x: event.touches[0].clientX - rect.left,
+        y: event.touches[0].clientY - rect.top,
+      };
+    }
+    return { x: 0, y: 0 };
+  };
 
-  const calculateTouchSpeed = useCallback(
-    (currentPos: { x: number; y: number }) => {
-      if (!prevPosition.current) return 1;
+  const handleTouchDrawing = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing.current || isRevealed) return;
 
-      const deltaX = Math.abs(currentPos.x - prevPosition.current.x);
-      const deltaY = Math.abs(currentPos.y - prevPosition.current.y);
-      return Math.max(deltaX, deltaY);
-    },
-    []
-  );
+    const currentPos = getTouchEventCoordinates(event);
 
-  const handleTouchDrawing = useCallback(
-    (event: React.TouchEvent<HTMLCanvasElement>) => {
-      if (!isDrawing.current || isRevealed) return;
-
-      event.preventDefault();
-
-      const currentPos = getTouchEventCoordinates(event);
-      const speed = calculateTouchSpeed(currentPos);
-
-      if (prevPosition.current !== null) {
-        drawBrushLine(
-          prevPosition.current.x,
-          prevPosition.current.y,
-          currentPos.x,
-          currentPos.y,
-          speed
-        );
-      } else {
-        drawBrush(currentPos.x, currentPos.y);
-      }
-
-      prevPosition.current = currentPos;
-    },
-    [
-      drawBrushLine,
-      drawBrush,
-      getTouchEventCoordinates,
-      calculateTouchSpeed,
-      isRevealed,
-    ]
-  );
-
-  const handleTouchStart = useCallback(
-    (event: React.TouchEvent<HTMLCanvasElement>) => {
-      if (isRevealed) return;
-
-      isDrawing.current = true;
-      const currentPos = getTouchEventCoordinates(event);
-      prevPosition.current = currentPos;
+    if (prevPosition.current !== null) {
+      drawBrushLine(
+        prevPosition.current.x,
+        prevPosition.current.y,
+        currentPos.x,
+        currentPos.y
+      );
+    } else {
       drawBrush(currentPos.x, currentPos.y);
-    },
-    [drawBrush, getTouchEventCoordinates, isRevealed]
-  );
+    }
 
-  const handleTouchEnd = useCallback(() => {
+    prevPosition.current = currentPos;
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    if (isRevealed) return;
+
+    isDrawing.current = true;
+    const currentPos = getTouchEventCoordinates(event);
+
+    drawBrush(currentPos.x, currentPos.y);
+
+    prevPosition.current = currentPos;
+  };
+
+  const handleTouchEnd = () => {
     isDrawing.current = false;
-    prevPosition.current = null;
 
     if (dimension.width < 768) {
       setTimeout(checkErasedPercentage, 100);
     }
-  }, [checkErasedPercentage, dimension.width]);
+
+    prevPosition.current = null;
+  };
+
+  // Initialize canvas
+  useEffect(() => {
+    if (dimension.width > 0) init();
+  }, [dimension, init]);
 
   // Load brush image
   useEffect(() => {
@@ -308,14 +270,10 @@ function CanvasPaintReveal() {
     img.src = "/assets/masks/brush-texture.png";
   }, []);
 
-  useEffect(() => {
-    if (dimension.width > 0) init();
-  }, [dimension, init]);
-
   // Check animation progress periodically
   useEffect(() => {
     if (isAnimating) {
-      const interval = setInterval(checkErasedPercentage, 500);
+      const interval = setInterval(checkErasedPercentage, 800);
       return () => clearInterval(interval);
     }
   }, [isAnimating, checkErasedPercentage]);
@@ -323,9 +281,7 @@ function CanvasPaintReveal() {
   // Cleanup animation on unmount
   useEffect(() => {
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      if (animationRef.current) stopAutoAnimation();
     };
   }, []);
 
@@ -350,7 +306,7 @@ function CanvasPaintReveal() {
             transition: isRevealed ? "opacity 0.8s ease-out" : "none",
           }}
           onMouseEnter={handleMouseEnter}
-          onMouseMove={manageMouseMove}
+          onMouseMove={handleMouseMove}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchDrawing}
           onTouchEnd={handleTouchEnd}
