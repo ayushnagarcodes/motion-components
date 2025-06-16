@@ -14,12 +14,12 @@ import StaggeredNav from "./components/StaggeredNav";
 import StaggeredScroll from "./components/StaggeredScroll";
 import TextSlideOnScroll from "./components/TextSlideOnScroll";
 import TextStretch from "./components/TextStretch";
-// import Practice from "./components/Practice";
+import EyeFollow from "./components/EyeFollow";
 
 function App() {
   return (
     <main className="grid md:grid-cols-2">
-      {/* <Practice /> */}
+      <EyeFollow />
       <CanvasPaintReveal1 />
       <CanvasPaintReveal2 />
       <CursorHoverMaskReveal />
